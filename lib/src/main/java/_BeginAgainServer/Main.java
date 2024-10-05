@@ -7,8 +7,7 @@ import java.net.SocketException;
 
 public class Main {
     private static final int UNITY_SERVER_PORT = 9876;  // 서버가 수신할 포트 번호
-    private static final int[] ARDUTINO_SERVER_PORT= {9877,9878,9879,9880}; // 왼쪽 손
-
+    private static final int[] ARDUTINO_SERVER_PORT= {9877,9878,9879,9880}; // 아두이노 포트 번호
     private static final int BUFFER_SIZE = 1024;  // 수신할 데이터 크기
 
     public static void main(String[] args) throws Exception {
@@ -16,7 +15,7 @@ public class Main {
 
         // 아두이노 클라이언트 수 만큼 스레드를 생성해서 데이터 수신을 처리
         for (int i = 0; i < 4; i++) {
-            new ArduinoClientHandler( i).start();
+            new ArduinoClientHandler(i).start();
         }
         new UnityClientHandler(4).start();
     }
@@ -48,16 +47,15 @@ public class Main {
                     serverSocket.receive(receivePacket);
                     unityAddress = receivePacket.getAddress();
                     unityPort = receivePacket.getPort();
-                    String messageFromArduino = new String(receivePacket.getData(), 0, receivePacket.getLength());
-                    System.out.println("unity " + clientId + " from unity" + messageFromArduino);
-
-                    String data = "-1;"+messageFromArduino;
-                    System.out.println(data);
-                    byte[] dataByte = data.getBytes();
-                    DatagramPacket sendPacket = new DatagramPacket(dataByte, dataByte.length, unityAddress, unityPort);
+                    String messageFromUnity = new String(receivePacket.getData(), 0, receivePacket.getLength());// Unity로 부터 받은 데이터
+                    System.out.println("unity " + clientId + " from unity" + messageFromUnity);
+                    String data = "-1;"+messageFromUnity;
+                    System.out.println(data); 
+                    byte[] dataByte = data.getBytes(); 
+                    DatagramPacket sendPacket = new DatagramPacket(dataByte, dataByte.length, unityAddress, unityPort); //Unity로 전송할 데이터
                     while(true) {
-    				serverSocket.send(sendPacket);
-    				Thread.sleep(500);
+    				serverSocket.send(sendPacket); //유니티로 packet한 데이터 전송
+    				Thread.sleep(500); //0.5초마다 전송
                     }
     			}
     			
@@ -71,10 +69,12 @@ public class Main {
     public static class ArduinoClientHandler extends Thread {
         private DatagramSocket serverSocket;
         private int clientId;
+        private int arduinoPort;
+        private InetAddress arduinoAddress;
 
-        public ArduinoClientHandler( int clientId) {
+        public ArduinoClientHandler(int clientId) {
             try {
-				serverSocket=new DatagramSocket(ARDUTINO_SERVER_PORT[clientId]);
+				serverSocket=new DatagramSocket(ARDUTINO_SERVER_PORT[clientId]); //아두이노 지정한 포트별로 소켓 생성
 			} catch (SocketException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -91,9 +91,17 @@ public class Main {
                     // 아두이노로부터 데이터 수신
                     DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                     serverSocket.receive(receivePacket);
+                    arduinoPort=receivePacket.getPort();
+                    arduinoAddress=receivePacket.getAddress();
+                    
                     String messageFromArduino = new String(receivePacket.getData(), 0, receivePacket.getLength());
                     System.out.println("arduino " + clientId + " from aduino" + messageFromArduino);
-
+                    String message=" "; //아두이노로 전송할 데이터
+                    byte[] dataByte = message.getBytes(); 
+                    DatagramPacket sendPacket = new DatagramPacket(dataByte, dataByte.length, arduinoAddress, arduinoPort);
+                    serverSocket.send(sendPacket); //아두이노로 데이터 전송
+                    
+                    
                     // 수신한 데이터를 처리하고 유니티에 보낼 형식으로 변환
                     String processedData = processArduinoData(messageFromArduino);
 
