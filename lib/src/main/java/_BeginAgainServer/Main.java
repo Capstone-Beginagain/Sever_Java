@@ -4,7 +4,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import _BeginAgainServer.SharedObject;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -65,15 +64,16 @@ public class Main {
                     // 유니티 데이터 업데이트
                     sharedObject.setUnityAddress(unityAddress);
                     sharedObject.setUnityPort(unityPort);
-
+                    sharedObject.setConnectUnity(true);
+                    sharedObject.setServerSocket(serverSocket);
                     // 아두이노에서 받은 데이터 유니티로 전송
-                    String dataToSend = sharedObject.getData(); // 공유 객체에서 데이터 읽기
-                    if (dataToSend != null) {
-                        byte[] sendData = dataToSend.getBytes();
-                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, unityAddress, unityPort);
-                        serverSocket.send(sendPacket);
-                        System.out.println("Sent to Unity " + clientId + ": " + dataToSend);
-                    }
+//                    String dataToSend = sharedObject.getData(); // 공유 객체에서 데이터 읽기
+//                    if (dataToSend != null) {
+//                        byte[] sendData = dataToSend.getBytes();
+//                        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, unityAddress, unityPort);
+//                        serverSocket.send(sendPacket);
+//                        System.out.println("Sent to Unity " + clientId + ": " + dataToSend);
+//                    }
 
                     Thread.sleep(500); // 0.5초마다 전송
                 }
@@ -87,7 +87,6 @@ public class Main {
         private DatagramSocket serverSocket;
         private int clientId;
         private SharedObject sharedObject;
-
         public ArduinoClientHandler(int clientId, SharedObject sharedObject) {
             this.clientId = clientId;
             this.sharedObject = sharedObject;
