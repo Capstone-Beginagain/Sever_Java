@@ -23,7 +23,7 @@ public class SharedObject {
         		byte[] sendData = data.getBytes();
                 DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, unityAddress, unityPort);
                 serverSocket.send(sendPacket);
-                System.out.println("Sent to Unity " + unityPort + ": " + data);
+                //System.out.println("Sent to Unity " + unityPort + ": " + data);
         	}catch(IOException e) {
         		e.printStackTrace();
         	}

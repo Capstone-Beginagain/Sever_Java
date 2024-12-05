@@ -4,13 +4,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 
 public class Main {
     private static final int[] UNITY_SERVER_PORT = {9876, 9875, 9874, 9873}; 
-    private static final int[] ARDUINO_SERVER_PORT = {9877, 9878, 9879, 9880};
+    private static final int[] ARDUINO_SERVER_PORT = {9877, 9878, 9879, 9870};
     private static final int BUFFER_SIZE = 1024;
 
     public static void main(String[] args) throws Exception {
@@ -75,7 +73,7 @@ public class Main {
 //                        System.out.println("Sent to Unity " + clientId + ": " + dataToSend);
 //                    }
 
-                    Thread.sleep(500); // 0.5초마다 전송
+                    //Thread.sleep(500); // 0.5초마다 전송
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -114,7 +112,7 @@ public class Main {
                     // 데이터 공유 객체에 저장
                     sharedObject.setData(messageFromArduino);
 
-                    Thread.sleep(100); // 0.1초마다 수신
+                    //Thread.sleep(100); // 0.1초마다 수신
                 }
             } catch (Exception e) {
                 e.printStackTrace();
